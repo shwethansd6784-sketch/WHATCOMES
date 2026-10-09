@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReturnWise — Smart Returns & Root-Cause Advisor | GadgetBay</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <!-- Chart.js: Local bundled with CDN fallback -->
+  <script src="/static/lib/chart.umd.min.js"></script>
+  <script>
+    if (typeof Chart === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+        </div>
+        <div class="brand-details">
+          <h1>ReturnWise</h1>
+          <p>Smart Returns & Advisor</p>
+          <span class="demo-company-tag">GadgetBay Ops</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <span class="nav-category">Main Operations</span>
+        <a class="nav-item active" data-tab="overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Overview</span>
+        </a>
+
+        <a class="nav-item" data-tab="returns">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          <span>Returns Management</span>
+          <span class="nav-badge" id="nav-returns-count">60</span>
+        </a>
+
+        <a class="nav-item" data-tab="inspection">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Product Inspection</span>
+          <span class="nav-badge" id="nav-pending-count">18</span>
+        </a>
+
+        <span class="nav-category">Intelligence</span>
+        <a class="nav-item" data-tab="root-cause">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span>Root-Cause Analysis</span>
+        </a>
+
+        <a class="nav-item" data-tab="recommendations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span>Recovery Advisor</span>
+        </a>
+
+        <a class="nav-item" data-tab="action-centre">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          <span>Action Centre</span>
+          <span class="nav-badge" id="nav-actions-count">4</span>
+        </a>
+
+        <span class="nav-category">Governance</span>
+        <a class="nav-item" data-tab="reports">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <span>Reports & Exports</span>
+        </a>
+
+        <a class="nav-item" data-tab="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="demo-data-notice">
+          <p><span>DEMO DATA ACTIVE</span><br>All statistics dynamically computed from SQLite database</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="main-wrapper">
+      <!-- HEADER -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="sidebar-toggle-btn" id="sidebar-toggle" title="Toggle Sidebar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="header-title-box">
+            <h2 id="current-page-title">Overview Dashboard</h2>
+            <p id="current-page-subtitle">Real-time returns processing, defect analysis, and recovery optimization</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button class="btn btn-secondary btn-sm" id="btn-quick-new-return">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Add Return
+          </button>
+          <button class="btn btn-primary btn-sm" id="btn-quick-inspect">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            Inspect Item
+          </button>
+        </div>
+      </header>
+
+      <!-- HACKATHON GUIDED DEMO STEPPER BAR -->
+      <div class="demo-stepper-bar">
+        <div class="demo-stepper-title">
+          <div class="demo-pulse-dot"></div>
+          <span style="font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em;">HACKATHON DEMO WALKTHROUGH:</span>
+        </div>
+        <div class="demo-steps-nav">
+          <button class="demo-step-btn" data-step="1">1. Overview</button>
+          <button class="demo-step-btn highlight" data-step="2">2. Find RET-1002 (Headphones)</button>
+          <button class="demo-step-btn" data-step="3">3. Bench Inspection</button>
+          <button class="demo-step-btn" data-step="4">4. Recovery Decision</button>
+          <button class="demo-step-btn" data-step="5">5. Supplier Root-Cause</button>
+          <button class="demo-step-btn" data-step="6">6. Corrective Action (ACT-101)</button>
+          <button class="demo-step-btn" data-step="7">7. Test RET-1014 (Restock)</button>
+          <button class="demo-step-btn" data-step="8">8. Financial Audit</button>
+        </div>
+      </div>
+
+      <!-- PAGES CONTAINER -->
+      <div class="page-container">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: OVERVIEW DASHBOARD                  -->
+        <!-- ========================================== -->
+        <section class="page-tab-content active" id="tab-overview">
+          <!-- KPI Summary Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-top">
+                <span class="kpi-label">Total Returns</span>
+                <div class="kpi-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-total-returns">--</div>
+              <div class="kpi-subtext">
+                <span class="kpi-badge neutral" id="kpi-change-label">Demo period baseline</span>
+              </div>
+            </div>
+
+            <div class="kpi-card warning">
+              <div class="kpi-top">
+                <span class="kpi-label">Awaiting Inspection</span>
+                <div class="kpi-icon-wrap" style="color: var(--color-warning);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-awaiting-inspection">--</div>
+              <div class="kpi-subtext">Pending bench triage</div>
+            </div>
+
+            <div class="kpi-card danger">
+              <div class="kpi-top">
+                <span class="kpi-label">Confirmed Defective</span>
+                <div class="kpi-icon-wrap" style="color: var(--color-danger);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-confirmed-defective">--</div>
+              <div class="kpi-subtext">Verified by technician</div>
+            </div>
+
+            <div class="kpi-card success">
+              <div class="kpi-top">
+                <span class="kpi-label">Approved Restocking</span>
+                <div class="kpi-icon-wrap" style="color: var(--color-success);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-approved-restocking">--</div>
+              <div class="kpi-subtext">100% Grade-A recovery</div>
+            </div>
+
+            <div class="kpi-card navy">
+              <div class="kpi-top">
+                <span class="kpi-label">Est. Financial Loss</span>
+                <div class="kpi-icon-wrap">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-financial-loss">$0</div>
+              <div class="kpi-subtext">Gross returned retail value</div>
+            </div>
+
+            <div class="kpi-card teal">
+              <div class="kpi-top">
+                <span class="kpi-label">Recoverable Value</span>
+                <div class="kpi-icon-wrap" style="color: var(--brand-accent);">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-recoverable-value">$0</div>
+              <div class="kpi-subtext" id="kpi-recovery-rate-sub">Net recovery margin</div>
+            </div>
+          </div>
+
+          <!-- Charts Row 1 -->
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Customer Returns by Reported Reason</h3>
+                  <p>Customer intake complaints breakdown (DEMO DATA)</p>
+                </div>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-reasons"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Weekly Return Volume Trends</h3>
+                  <p>Inbound returned units received per week</p>
+                </div>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-trends"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row 2 -->
+          <div class="charts-grid">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Products with Highest Return Rates</h3>
+                  <p>Calculated as (Units Returned / Units Sold × 100%)</p>
+                </div>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-product-rates"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <h3>Supplier-Related Confirmed Defects</h3>
+                  <p>Bench-verified hardware defects by manufacturer</p>
+                </div>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="chart-supplier-defects"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Priority Actions Section -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Priority Actions & Quality Investigations</h3>
+                <p>Urgent supplier, batch, or catalog issues requiring operational follow-up</p>
+              </div>
+              <button class="btn btn-secondary btn-sm" id="btn-view-all-actions">View All in Action Centre</button>
+            </div>
+            <div class="priority-actions-list" id="overview-priority-actions">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 2: RETURNS MANAGEMENT                  -->
+        <!-- ========================================== -->
+        <section class="page-tab-content" id="tab-returns">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Returns Directory & Logistics Registry</h3>
+                <p>Track, filter, and inspect physical merchandise returns received at GadgetBay</p>
+              </div>
+              <button class="btn btn-primary" id="btn-open-add-return">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Add Return Record
+              </button>
+            </div>
+
+            <!-- Filters Bar -->
+            <div class="filter-bar">
+              <div class="search-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" class="form-control" id="filter-returns-search" placeholder="Search Return ID, Order ID, Customer, Product...">
+              </div>
+
+              <select class="form-control" style="width: 170px;" id="filter-returns-product">
+                <option value="">All Products</option>
+              </select>
+
+              <select class="form-control" style="width: 170px;" id="filter-returns-supplier">
+                <option value="">All Suppliers</option>
+              </select>
+
+              <select class="form-control" style="width: 180px;" id="filter-returns-reason">
+                <option value="">All Return Reasons</option>
+                <option value="Defective product">Defective product</option>
+                <option value="Damaged packaging">Damaged packaging</option>
+                <option value="Wrong item delivered">Wrong item delivered</option>
+                <option value="Incorrect product description">Incorrect product description</option>
+                <option value="Incompatible product">Incompatible product</option>
+                <option value="Customer changed mind">Customer changed mind</option>
+                <option value="Missing components">Missing components</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <select class="form-control" style="width: 160px;" id="filter-returns-status">
+                <option value="">All Statuses</option>
+                <option value="Pending Inspection">Pending Inspection</option>
+                <option value="Inspected">Inspected</option>
+              </select>
+
+              <button class="btn btn-secondary btn-sm" id="btn-reset-returns-filter">Reset Filters</button>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-responsive">
+              <table class="data-table" id="returns-table">
+                <thead>
+                  <tr>
+                    <th>Return ID</th>
+                    <th>Order ID</th>
+                    <th>Product & SKU</th>
+                    <th>Supplier</th>
+                    <th>Customer Reason</th>
+                    <th>Return Date</th>
+                    <th>Status</th>
+                    <th>Value ($)</th>
+                    <th>Recovery Action</th>
+                    <th style="text-align: right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="returns-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 3: PRODUCT INSPECTION WORKFLOW        -->
+        <!-- ========================================== -->
+        <section class="page-tab-content" id="tab-inspection">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Physical Product Triage & Bench Diagnostics</h3>
+                <p>Verify physical condition against customer claims to trigger the Smart Recovery Advisor</p>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group" style="flex: 1;">
+                <label class="form-label">Select Return Item to Inspect <span class="required">*</span></label>
+                <select class="form-control" id="insp-return-select">
+                  <option value="">-- Choose Return ID to triage --</option>
+                </select>
+                <span class="form-help">Items with 'Pending Inspection' status are shown at top.</span>
+              </div>
+            </div>
+
+            <!-- Inspection Selected Item Profile Banner -->
+            <div id="insp-selected-card" style="display: none; background: #F8FAFC; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                <div>
+                  <h4 id="insp-disp-product-name" style="font-size: 1.05rem; font-weight: 700;">--</h4>
+                  <p style="font-size: 0.8rem; color: var(--text-secondary);" id="insp-disp-meta">--</p>
+                </div>
+                <div style="text-align: right;">
+                  <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">Retail Price</span>
+                  <div style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);" id="insp-disp-price">$0.00</div>
+                </div>
+              </div>
+              <div style="margin-top: 12px; padding: 10px; background: #FFFFFF; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                <span style="font-size: 0.75rem; font-weight: 700; color: #B45309; text-transform: uppercase;">Customer Intake Claim:</span>
+                <p style="font-size: 0.85rem; color: var(--text-main); margin-top: 2px;" id="insp-disp-reason-text">--</p>
+              </div>
+            </div>
+
+            <!-- Physical Inspection Form -->
+            <form id="inspection-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Physical Item Condition <span class="required">*</span></label>
+                  <select class="form-control" id="insp-condition" required>
+                    <option value="">-- Select Condition --</option>
+                    <option value="Unopened">Unopened (Factory seal intact)</option>
+                    <option value="Opened and working">Opened and working (Bench test passed)</option>
+                    <option value="Damaged">Damaged (Cosmetic / transit fracture)</option>
+                    <option value="Confirmed defective">Confirmed defective (Bench verified failure)</option>
+                    <option value="Missing components">Missing components (Incomplete accessory kit)</option>
+                    <option value="Requires further inspection">Requires further inspection (Inconclusive)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Tested Hardware Functionality <span class="required">*</span></label>
+                  <select class="form-control" id="insp-functionality" required>
+                    <option value="Fully Functional">Fully Functional</option>
+                    <option value="Intermittent Fault">Intermittent Fault</option>
+                    <option value="Complete Failure / Dead">Complete Failure / Dead</option>
+                    <option value="Cosmetic Damage Only">Cosmetic Damage Only</option>
+                    <option value="Untested">Untested (Sealed Unit)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Retail Packaging Condition <span class="required">*</span></label>
+                  <select class="form-control" id="insp-packaging" required>
+                    <option value="Original Sealed">Original Sealed</option>
+                    <option value="Opened Intact">Opened Intact</option>
+                    <option value="Torn / Distressed">Torn / Distressed</option>
+                    <option value="Missing Packaging">Missing Packaging</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Missing Components</label>
+                  <input type="text" class="form-control" id="insp-missing" placeholder="e.g. None, or USB-C cable, manual...">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Inspector Name / ID <span class="required">*</span></label>
+                  <input type="text" class="form-control" id="insp-inspector" value="David Martinez (Tech Lead)" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Inspection Date <span class="required">*</span></label>
+                  <input type="date" class="form-control" id="insp-date" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Technical Bench Notes & Diagnostic Logs</label>
+                <textarea class="form-control" id="insp-notes" placeholder="Detail root-cause findings, audio analyzer outputs, visual checks, or serial number confirmations..."></textarea>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+                <button type="button" class="btn btn-secondary" id="btn-clear-insp">Reset Form</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-insp">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Save Inspection & Generate Recommendation
+                </button>
+              </div>
+            </form>
+
+            <!-- Instant Live Recommendation Card Result -->
+            <div id="insp-live-recommendation-box" style="display: none; margin-top: 24px;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px;">Generated Recovery Decision:</h4>
+              <div class="recommendation-banner" id="insp-rec-banner">
+                <div class="rec-icon-box">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="rec-details" style="flex: 1;">
+                  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                    <h3 id="insp-rec-action">--</h3>
+                    <span class="badge" id="insp-rec-confidence">High Confidence (95%)</span>
+                  </div>
+                  <p id="insp-rec-reason" style="margin-top: 6px;">--</p>
+                  <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 4px;" id="insp-rec-rule">Rule: --</p>
+
+                  <div class="financial-math-breakdown">
+                    <div class="math-item">
+                      <span class="math-item-label">Resale Recovery</span>
+                      <span class="math-item-value" id="insp-rec-resale">$0.00</span>
+                    </div>
+                    <div class="math-item">
+                      <span class="math-item-label">Processing / Triage Cost</span>
+                      <span class="math-item-value" id="insp-rec-cost">$0.00</span>
+                    </div>
+                    <div class="math-item">
+                      <span class="math-item-label">Net Recoverable</span>
+                      <span class="math-item-value net" id="insp-rec-net">$0.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 4: ROOT-CAUSE ANALYSIS                 -->
+        <!-- ========================================== -->
+        <section class="page-tab-content" id="tab-root-cause">
+          <!-- Anomaly Detections Grid -->
+          <div class="card-header" style="border: none; padding: 0; margin-bottom: 12px;">
+            <div class="card-title-group">
+              <h3>Systemic Root-Cause Findings & Pattern Detections</h3>
+              <p>Verified correlations contrasting customer-reported claims with physical bench triage</p>
+            </div>
+          </div>
+
+          <div class="highlight-grid" id="root-cause-highlights">
+            <!-- Dynamically populated from backend -->
+          </div>
+
+          <!-- Product Return Rates Table -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Product Reliability & Return Rate Matrix</h3>
+                <p>Evaluates return rates (Returned ÷ Sold) and bench-verified defect ratios</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Product & SKU</th>
+                    <th>Supplier</th>
+                    <th>Units Sold</th>
+                    <th>Returns</th>
+                    <th>Return Rate (%)</th>
+                    <th>Confirmed Defects</th>
+                    <th>Defect Rate vs Sold</th>
+                    <th>Defect Share among Returns</th>
+                    <th>Sample Size</th>
+                  </tr>
+                </thead>
+                <tbody id="root-cause-product-table">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Customer Claim vs Inspection Reality Matrix -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Customer Claim vs. Technician Inspection Reality</h3>
+                <p>Reveals discrepancy between unverified customer complaints and verified physical outcomes</p>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Customer Reported Reason</th>
+                    <th>Total Claims</th>
+                    <th>Confirmed Defective</th>
+                    <th>Opened & Functional</th>
+                    <th>Unopened (Buyer Remorse)</th>
+                    <th>Damaged in Transit</th>
+                    <th>Pending Bench Triage</th>
+                  </tr>
+                </thead>
+                <tbody id="root-cause-reason-matrix">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 5: RECOVERY RECOMMENDATIONS            -->
+        <!-- ========================================== -->
+        <section class="page-tab-content" id="tab-recommendations">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Smart Recovery Recommendation Directory</h3>
+                <p>Explainable disposition decisions powered by transparent rule-based financial models</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <select class="form-control" style="width: 200px;" id="filter-rec-action">
+                  <option value="">All Recommendations</option>
+                  <option value="Restock after inspection">Restock after inspection</option>
+                  <option value="Repair">Repair</option>
+                  <option value="Refurbish">Refurbish</option>
+                  <option value="Liquidate or sell through an approved secondary channel">Liquidate / Secondary Channel</option>
+                  <option value="Hold for further inspection">Hold for further inspection</option>
+                  <option value="Dispose of according to applicable policy">Dispose / Recycle</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Recommendations Grid -->
+            <div style="display: flex; flex-direction: column; gap: 16px;" id="recommendations-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 6: ACTION CENTRE                       -->
+        <!-- ========================================== -->
+        <section class="page-tab-content" id="tab-action-centre">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Operational Action Centre & Corrective Tasks</h3>
+                <p>Track vendor audits, packaging improvements, catalog corrections, and containment</p>
+              </div>
+              <button class="btn btn-primary" id="btn-open-add-action">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Create Corrective Action
+              </button>
+            </div>
+
+            <div class="filter-bar">
+              <select class="form-control" style="width: 160px;" id="filter-action-status">
+                <option value="">All Statuses</option>
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Resolved">Resolved</option>
+              </select>
+
+              <select class="form-control" style="width: 160px;" id="filter-action-priority">
+                <option value="">All Priorities</option>
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <!-- Actions Table -->
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Action ID</th>
+                    <th>Priority</th>
+                    <th>Title & Objective</th>
+                    <th>Related Entity</th>
+                    <th>Assigned Lead</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Estimated Financial Impact</th>
+                    <th style="text-align: right;">Manage</th>
+                  </tr>
+                </thead>
+                <tbody id="actions-table-body">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 7: REPORTS & EXPORT                    -->
+        <!-- ========================================== -->
+        <section class="page-tab-content" id="tab-reports">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>Executive Returns & Quality Intelligence Report</h3>
+                <p>Auditable summaries of financial loss, recovery yields, and supplier risk</p>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                  Print Report Layout
+                </button>
+                <div class="export-dropdown-wrapper">
+                  <button class="btn btn-primary" id="btn-export-returns-csv">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export Returns (CSV)
+                  </button>
+                  <button class="btn btn-secondary" id="btn-export-suppliers-csv">
+                    Supplier Quality CSV
+                  </button>
+                  <button class="btn btn-secondary" id="btn-export-actions-csv">
+                    Actions CSV
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Supplier Root-Cause Matrix Section -->
+            <div style="margin-bottom: 24px;">
+              <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">1. Supplier Quality & Defect Scorecard</h4>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">Statistical accountability table linking suppliers to bench-verified defects</p>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Supplier Name</th>
+                      <th>Units Sold</th>
+                      <th>Units Returned</th>
+                      <th>Confirmed Defects</th>
+                      <th>Return Rate (%)</th>
+                      <th>Defect Rate (%)</th>
+                      <th>Defect Financial Impact</th>
+                      <th>Evidence Status</th>
+                      <th>Recommended Follow-up</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reports-supplier-table">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Recovery Yield Breakdown Section -->
+            <div>
+              <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px;">2. Recovery Yield & Disposition Economics</h4>
+              <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">Financial breakdown: Original Value vs Processing Costs vs Net Recovered</p>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Recommended Action</th>
+                      <th>Unit Count</th>
+                      <th>Original Retail Value</th>
+                      <th>Gross Recovery Value</th>
+                      <th>Processing & Triage Cost</th>
+                      <th>Net Recovered Value</th>
+                      <th>Recovery Yield (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reports-financial-table">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 8: SETTINGS & DEMO CONTROLS            -->
+        <!-- ========================================== -->
+        <section class="page-tab-content" id="tab-settings">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h3>System Configuration & Hackathon Demo Controls</h3>
+                <p>Manage demonstration state, restore initial database, and view application architecture</p>
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              <!-- Reset Demo Data Card -->
+              <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-md); padding: 20px;">
+                <h4 style="font-size: 1rem; font-weight: 700; color: #92400E; margin-bottom: 6px;">Reset Demo Database</h4>
+                <p style="font-size: 0.85rem; color: #78350F; margin-bottom: 14px;">
+                  Instantly restore all 60 returns, 12 products, 6 suppliers, and 5 corrective actions to their pristine initial benchmark state.
+                  Useful when rehearsing or restarting the hackathon jury presentation.
+                </p>
+                <button class="btn btn-danger" id="btn-trigger-reset-demo">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                  Reset Demo Data to Initial State
+                </button>
+              </div>
+
+              <!-- Architecture Reference Card -->
+              <div style="background: #F8FAFC; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 20px;">
+                <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">ReturnWise System Architecture</h4>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6;">
+                  <ul style="padding-left: 20px;">
+                    <li><strong>Backend:</strong> Python 3.14 with Flask REST API</li>
+                    <li><strong>Database:</strong> SQLite with foreign keys and index optimization (Zero config required)</li>
+                    <li><strong>Decision Engine:</strong> Modular rule-based expert system (`recovery_engine.py`) calculating Net Recovery ($Net = Resale - Processing$)</li>
+                    <li><strong>Root-Cause Analytics:</strong> Statistical cross-tabulation engine (`root_cause_engine.py`) comparing customer complaint vs technician verification with sample-size safeguards ($N \ge 3$)</li>
+                    <li><strong>Frontend:</strong> Native Semantic HTML5, Modular JavaScript (ES6+), Modern SaaS CSS, Chart.js</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: ADD RETURN RECORD                   -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="modal-add-return">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Record New Customer Return</h3>
+        <button class="modal-close-btn" data-close-modal="modal-add-return">&times;</button>
+      </div>
+      <form id="form-add-return">
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Product <span class="required">*</span></label>
+              <select class="form-control" id="modal-add-product" required>
+                <option value="">-- Select Product --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Order ID <span class="required">*</span></label>
+              <input type="text" class="form-control" id="modal-add-order" placeholder="e.g. ORD-92001" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Customer Name <span class="required">*</span></label>
+              <input type="text" class="form-control" id="modal-add-customer" placeholder="e.g. Rachel Green" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Return Date <span class="required">*</span></label>
+              <input type="date" class="form-control" id="modal-add-date" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Customer-Reported Return Reason <span class="required">*</span></label>
+            <select class="form-control" id="modal-add-reason" required>
+              <option value="">-- Select Customer Reason --</option>
+              <option value="Defective product">Defective product</option>
+              <option value="Damaged packaging">Damaged packaging</option>
+              <option value="Wrong item delivered">Wrong item delivered</option>
+              <option value="Incorrect product description">Incorrect product description</option>
+              <option value="Incompatible product">Incompatible product</option>
+              <option value="Customer changed mind">Customer changed mind</option>
+              <option value="Missing components">Missing components</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Customer Detailed Comment</label>
+            <textarea class="form-control" id="modal-add-comment" placeholder="Describe customer's complaint or return reason..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-add-return">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Return Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: VIEW RETURN DETAILS                 -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="modal-view-return">
+    <div class="modal-container large">
+      <div class="modal-header">
+        <h3 id="view-modal-title">Return Details</h3>
+        <button class="modal-close-btn" data-close-modal="modal-view-return">&times;</button>
+      </div>
+      <div class="modal-body" id="view-modal-content">
+        <!-- Dynamically rendered -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-view-return">Close</button>
+        <button type="button" class="btn btn-primary" id="btn-modal-go-inspect">Inspect This Item</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: ADD CORRECTIVE ACTION               -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="modal-add-action">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Create Corrective Action</h3>
+        <button class="modal-close-btn" data-close-modal="modal-add-action">&times;</button>
+      </div>
+      <form id="form-add-action">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Action Title <span class="required">*</span></label>
+            <input type="text" class="form-control" id="modal-act-title" placeholder="e.g. Audit Audio Driver Assembly Batch" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Related Entity Type</label>
+              <select class="form-control" id="modal-act-type">
+                <option value="Supplier">Supplier</option>
+                <option value="Product">Product</option>
+                <option value="Process">Logistics / Process</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Entity Name / ID <span class="required">*</span></label>
+              <input type="text" class="form-control" id="modal-act-entity" placeholder="e.g. SoundCraft Technologies" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Priority Level <span class="required">*</span></label>
+              <select class="form-control" id="modal-act-priority" required>
+                <option value="Critical">Critical</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Assigned Lead</label>
+              <input type="text" class="form-control" id="modal-act-assignee" value="Sarah Chen (QA Lead)" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Root-Cause Evidence / Reason <span class="required">*</span></label>
+            <textarea class="form-control" id="modal-act-evidence" placeholder="Summarize supporting bench data or defect rate..." required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Estimated Financial / Operational Impact</label>
+            <input type="text" class="form-control" id="modal-act-impact" placeholder="e.g. Prevents $1,200 recurring warranty loss">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close-modal="modal-add-action">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Action</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: CONFIRM RESET DEMO DATA             -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="modal-confirm-reset">
+    <div class="modal-container" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 style="color: var(--color-danger);">Confirm Demo Data Reset</h3>
+        <button class="modal-close-btn" data-close-modal="modal-confirm-reset">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-main);">
+          Are you sure you want to reset all return records and inspections to the initial benchmark demo state?
+        </p>
+        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">
+          This will restore the 60 pristine returns, pre-seeded defect clusters, and 5 demo corrective actions.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close-modal="modal-confirm-reset">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-reset-execute">Reset Database</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- SCRIPTS -->
+  <script src="/static/js/api_fallback.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/dashboard.js"></script>
+  <script src="/static/js/returns.js"></script>
+  <script src="/static/js/inspection.js"></script>
+  <script src="/static/js/root_cause.js"></script>
+  <script src="/static/js/recommendations.js"></script>
+  <script src="/static/js/suppliers.js"></script>
+  <script src="/static/js/actions.js"></script>
+  <script src="/static/js/reports.js"></script>
+
+</body>
+</html>
